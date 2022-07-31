@@ -1,0 +1,163 @@
+<html>
+<head>
+    <title>2017 Car Fuel Analysis</title>
+</head>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> circle {fill: lightblue; stroke: black;} </style>
+<body onload="init()">
+<h1>2017 Car Fuel Analysis</h1>
+<svg width=400 height=300>
+</svg>
+
+<p>Please select fuel type to see filtered results </p>
+
+<div>
+    <input type="checkbox" class="checkbox" id = 'gas_checkbox' value="Gasoline" checked><label>Gasoline</label>
+    <input type="checkbox" class="checkbox" id = 'diesel_checkbox' value="Diesel" checked><label>Diesel</label>
+    <input type="checkbox" class="checkbox" id = 'elec_checkbox' value="Electricity" checked><label>Electricity</label>
+</div>
+
+<script>
+    var gas_checkbox = d3.select('#gas_checkbox'); 
+    var diesel_checkbox = d3.select('#diesel_checkbox'); 
+    var elec_checkbox = d3.select('#elec_checkbox'); 
+    var margin = 50
+    var lx = d3.scaleLog().domain([10,150]).range([0,300]);
+    var ly = d3.scaleLog().domain([10,150]).range([200,0]);  
+    var color = d3.scaleOrdinal()
+
+    .domain(["Gasoline", "Diesel", "Electricity" ])
+    .range([ "lightblue", "yellow", "red"])
+
+
+async function init(){
+    const data = await d3.csv("https://flunky.github.io/cars2017.csv")
+   
+    var tooltip = d3.select('svg')
+    .append("div")
+    .attr("class", "tooltip")
+    .style("background-color", "black")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+    .style("color", "white")
+    
+    var showTooltip = function(d) {
+    tooltip.transition().duration(200)
+    tooltip
+    .style("opacity", 1)
+    .html("testing")
+    //.style("left", (d3.mouse(this)[0]+30) + "px")
+    //.style("top", (d3.mouse(this)[1]+30) + "px")
+     }
+    var moveTooltip = function(d) {
+    tooltip
+      .style("left", (d3.mouse(this)[0]+30) + "px")
+      .style("top", (d3.mouse(this)[1]+30) + "px")
+    }
+     var hideTooltip = function(d) {
+        tooltip.transition().duration(200).style("opacity", 0)
+    }
+
+    d3.select('svg')
+    .append("g")
+    .attr("transform", "translate("+margin+","+margin+")")
+    .selectAll().data(data).enter().append('circle')
+    .attr("cx", function(d,i) {return lx(d.AverageCityMPG);})
+    .attr("cy", function(d,i)  {return ly(d.AverageHighwayMPG);})
+    .attr("r", function(d,i) {return (Number.parseInt(d.EngineCylinders) + 2);})
+    .attr("class", function(d,i) {return d.Fuel;})
+    .style("fill", function(d){ return color(d.Fuel)})
+    .on('mouseover', showTooltip)
+    .on('mousemove', moveTooltip)
+    .on('mouseleave', hideTooltip)
+
+// Add Y axis 
+    d3.select('svg').append('g').attr("transform", "translate("+margin+","+margin+")").call(d3.axisLeft(ly).tickValues([10,20,50,100]).tickFormat(d3.format(".0f")))
+    .append("text")
+    .text("Average Highway MPG")
+    .attr("y", -10)
+    .attr("x", 60)
+    .style("text-anchor", "end")
+    .attr("fill", "#5D6971"); 
+// Add X axis     
+    d3.select('svg').append('g').attr("transform", "translate("+margin+","+(200+margin)+")").call(d3.axisBottom(lx).tickValues([10,20,50,100]).tickFormat(d3.format(".0f")))
+    .append("text")
+    .text("Average City MPG")
+    .attr("y", 40)
+    .attr("x", 300)
+    .style("text-anchor", "end")
+    .attr("fill", "#5D6971");
+    }
+
+async function gas(){
+    const data =  await d3.csv("https://flunky.github.io/cars2017.csv")
+    if (gas_checkbox.property("checked")) { 
+    d3.select('svg')
+    .append("g")
+    .attr("transform", "translate("+margin+","+margin+")")
+    .selectAll().data(data).enter().append('circle')
+    .transition().duration(1000)
+    .attr("cx", function(d,i) {if (d.Fuel == "Gasoline") {return lx(d.AverageCityMPG);}})
+    .attr("cy", function(d,i) {if (d.Fuel == 'Gasoline') {return ly(d.AverageHighwayMPG);}})
+    .attr("r", function(d,i) {if (d.Fuel == 'Gasoline') {return (Number.parseInt(d.EngineCylinders) + 2);}})
+    .attr("class", function(d,i) {return d.Fuel;})
+    .style("fill", "lightblue")
+    }
+    else {
+    d3.select('svg').selectAll("."+gas_checkbox.property("value")).transition().duration(1000).style("opacity", 0); 
+    }
+    }; 
+
+async function diesel(){
+    const data =  await d3.csv("https://flunky.github.io/cars2017.csv")
+    if (diesel_checkbox.property("checked")) { 
+    d3.select('svg')
+    .append("g")
+    .attr("transform", "translate("+margin+","+margin+")")
+    .selectAll().data(data).enter().append('circle')
+    .transition().duration(1000)
+    .attr("cx", function(d,i) {if (d.Fuel == "Diesel") {return lx(d.AverageCityMPG);}})
+    .attr("cy", function(d,i) {if (d.Fuel == 'Diesel') {return ly(d.AverageHighwayMPG);}})
+    .attr("r", function(d,i) {if (d.Fuel == 'Diesel') {return (Number.parseInt(d.EngineCylinders) + 2);}})
+    .attr("class", function(d,i) {return d.Fuel;})
+    .style("fill", "yellow")
+    }
+    else {
+    d3.select('svg').selectAll("."+diesel_checkbox.property("value")).transition().duration(1000).style("opacity", 0); 
+    }
+    }; 
+
+async function elec(){
+    const data =  await d3.csv("https://flunky.github.io/cars2017.csv")
+    if (elec_checkbox.property("checked")) { 
+    d3.select('svg')
+    .append("g")
+    .attr("transform", "translate("+margin+","+margin+")")
+    .selectAll().data(data).enter().append('circle')
+    .transition().duration(1000)
+    .attr("cx", function(d,i) {if (d.Fuel == "Electricity") {return lx(d.AverageCityMPG);}})
+    .attr("cy", function(d,i) {if (d.Fuel == 'Electricity') {return ly(d.AverageHighwayMPG);}})
+    .attr("r", function(d,i) {if (d.Fuel == 'Electricity') {return (Number.parseInt(d.EngineCylinders) + 2);}})
+    .attr("class", function(d,i) {return d.Fuel;})
+    .style("fill", "red")
+    }
+    else {
+    d3.select('svg').selectAll("."+elec_checkbox.property("value")).transition().duration(1000).style("opacity", 0); 
+    }
+    }; 
+    d3.select("#gas_checkbox").on("change",gas);
+    d3.select("#diesel_checkbox").on("change",diesel);
+    d3.select("#elec_checkbox").on("change",elec);
+
+
+/*
+d3.select('svg').selectAll("circle")
+.on("mouseover", function(){return tooltip.style("visibility", "visible");})
+.on("mousemove", function(){return tooltip.style("top", (event.pageY-800)+"px").style("left",(event.pageX-800)+"px");})
+.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+*/ 
+
+</script>
+
+</body>
+</html>
