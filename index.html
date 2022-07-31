@@ -3,13 +3,13 @@
     <title>2017 Car Fuel Analysis</title>
 </head>
 <script src='https://d3js.org/d3.v5.min.js'></script>
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 <style> circle {fill: lightblue; stroke: black;} </style>
 <body onload="init()">
 <h1>2017 Car Fuel Analysis</h1>
-<svg width=400 height=300>
+<svg width=500 height=300>
 </svg>
 
-<p>Large bubble size represents that the car has more number of Engine Cylinders; assumed 2 engine cylinders for electric cars for visual representation purpose. </p>
 <p>Please select fuel type to see filtered results: </p>
 
 <div>
@@ -23,7 +23,7 @@
     var diesel_checkbox = d3.select('#diesel_checkbox'); 
     var elec_checkbox = d3.select('#elec_checkbox'); 
     var margin = 50
-    var lx = d3.scaleLog().domain([10,150]).range([0,300]);
+    var lx = d3.scaleLog().domain([10,150]).range([0,400]);
     var ly = d3.scaleLog().domain([10,150]).range([200,0]);  
     var color = d3.scaleOrdinal()
 
@@ -85,7 +85,7 @@ async function init(){
     .append("text")
     .text("Average City MPG")
     .attr("y", 40)
-    .attr("x", 300)
+    .attr("x", 400)
     .style("text-anchor", "end")
     .attr("fill", "#5D6971");
     }
@@ -150,19 +150,25 @@ async function elec(){
     d3.select("#diesel_checkbox").on("change",diesel);
     d3.select("#elec_checkbox").on("change",elec);
 
-    const annotations = [
+const annotations = [
   {
-    note: { label: "Hi" },
-    x: 100,
-    y: 100,
-    dy: 137,
-    dx: 162,
-    type: d3.annotationCalloutElbow,
-    connector: { end: "arrow" },
+    note: { label: "Larger bubble size represents more Engine Cylinders; assumed 2 for all electric cars for representation purpose."},
+    padding: 5,  
+    connector: {
+      type: "line",     
+      points: 1, 
+      lineType : "horizontal"},   
+    color: ["purple"], 
+    x: 300,
+    y: 95,
+    dy: 20,
+    dx: 30,
   },
 ];
 
-d3.annotation().annotations(annotations);
+const makeAnnotations = d3.annotation().annotations(annotations) 
+
+d3.select("svg").append("g").call(makeAnnotations);
 
 
 /*
