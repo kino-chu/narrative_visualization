@@ -150,6 +150,20 @@ async function elec(){
     d3.select("#diesel_checkbox").on("change",diesel);
     d3.select("#elec_checkbox").on("change",elec);
 
+    const annotations = [
+  {
+    note: { label: "Hi" },
+    x: 100,
+    y: 100,
+    dy: 137,
+    dx: 162,
+    type: d3.annotationCalloutElbow,
+    connector: { end: "arrow" },
+  },
+];
+
+d3.annotation().annotations(annotations);
+
 
 /*
 d3.select('svg').selectAll("circle")
