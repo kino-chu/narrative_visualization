@@ -152,17 +152,17 @@ async function elec(){
 
 const annotations = [
   {
-    note: { label: "Larger bubble size represents more Engine Cylinders; assumed 2 for all electric cars for representation purpose."},
-    padding: 5,  
-    connector: {
-      type: "line",     
-      points: 1, 
-      lineType : "horizontal"},   
+    note: {
+        label: "Larger bubble means more # of Engine Cylinders, which tend to have lower avg. MPG",
+        align: "middle", 
+        wrap:  200
+
+},
     color: ["purple"], 
-    x: 300,
-    y: 95,
-    dy: 20,
-    dx: 30,
+    x: 260,
+    y: 150,
+    dy: 40,
+    dx: 70,
   },
 ];
 
